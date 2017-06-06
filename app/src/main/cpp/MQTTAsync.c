@@ -1129,7 +1129,7 @@ static int MQTTAsync_processCommand() {
 #ifdef OPENSSL
                 else if (strncmp(URI_SSL, serverURI, strlen(URI_SSL)) == 0) {
                     serverURI += strlen(URI_SSL);
-                    command->client->ssl = 1;
+                    queuedCommand->client->ssl = 1;
                 }
 #endif
             }
@@ -2012,6 +2012,7 @@ void Protocol_processPublication(Publish* publish, Clients* client) {
     publish->topic = NULL;
 }
 
+
 int MQTTAsync_connect(MQTTAsync handle, const MQTTAsyncConnectOptions* options) {
     MQTTAsyncClient* m = handle;
     int rc = MQTT_ASYNC_SUCCESS;
@@ -2550,14 +2551,14 @@ static int MQTTAsync_connecting(MQTTAsyncClient* m) {
            }
 
            if (setSocketForSSLRc != MQTT_ASYNC_SUCCESS) {
-               if (m->c->session != NULL && ((rc = SSL_set_Session(m->c->net.ssl, m->c->session)) != 1)) {
+               if (m->c->session != NULL && ((rc = SSL_set_session(m->c->net.ssl, m->c->session)) != 1)) {
                    LOG("Failed to set SSL session with stored data, non critical");
                }
                rc = SSLSocket_connect(m->c->net.ssl, m->c->net.socket);
 
                if (rc == TCPSOCKET_INTERRUPTED) {
                    rc = MQTT_CLIENT_SUCCESS;
-                   m->c->connect_state = 2;
+                   m->c->connectState = CONNECT_STATE_WAIT_FOR_SSL_COMPLETE;
                } else if (rc == SSL_FATAL) {
                    rc = SOCKET_ERROR;
                    goto exit;
@@ -2565,7 +2566,7 @@ static int MQTTAsync_connecting(MQTTAsyncClient* m) {
                    rc = MQTT_CLIENT_SUCCESS;
                    m->c->connectState = CONNECT_STATE_WAIT_FOR_CONNACK;
 
-                   if (MQTTPacket_send_connect(m->c, m->connect.details.conn.mqttVersion) == SOCKET_ERROR) {
+                   if (MQTTPacket_send_connect(m->c, m->connectCommand.details.conn.mqttVersion) == SOCKET_ERROR) {
                        rc = SOCKET_ERROR;
                        goto exit;
                    }
@@ -2601,7 +2602,7 @@ static int MQTTAsync_connecting(MQTTAsyncClient* m) {
             m->c->session = SSL_get1_session(m->c->net.ssl);
         }
         m->c->connectState = CONNECT_STATE_WAIT_FOR_CONNACK;
-        if ((rc = MQTTPacket_send_connect(m->c, m->connect.details.conn.mqttVersion)) == SOCKET_ERROR) {
+        if ((rc = MQTTPacket_send_connect(m->c, m->connectCommand.details.conn.mqttVersion)) == SOCKET_ERROR) {
             goto exit;
         }
     }

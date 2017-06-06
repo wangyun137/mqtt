@@ -365,6 +365,8 @@ typedef struct {
     * 对于匿名连接，也可以被设置为"aNULL"
     */
     const char* enabledCipherSuites;
+
+    int enableServerCertAuth;
 } MQTTAsyncSSLOptions;
 
 #define MQTTAsyncSSLOptions_initializer {{'M', 'Q', 'T', 'S'}, 0, NULL, NULL, NULL, NULL, NULL, 1}

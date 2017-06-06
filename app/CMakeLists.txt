@@ -49,7 +49,9 @@ add_library( common
              ${COMMON_SRC})
 
 # 设置include目录
-include_directories( ${CMAKE_SOURCE_DIR}/include/${ANDROID_ABI} )
+include_directories( ${SRC_PATH}/include
+
+                     ${CMAKE_SOURCE_DIR}/include/${ANDROID_ABI} )
 
 
 find_library( # Sets the name of the path variable.
@@ -59,12 +61,17 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
+find_library( z-lib
+
+              z)
+
 
 target_link_libraries( common
 
                        ${log-lib}
                        ssl
-                       crypto)
+                       crypto
+                       ${z-lib})
 
 
 add_library( mqtt-sync

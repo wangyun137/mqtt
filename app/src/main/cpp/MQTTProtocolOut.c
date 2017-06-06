@@ -70,7 +70,7 @@ int MQTTProtocol_connect(const char* ip_address, Clients* aClient, int mqttVersi
             //绑定socket到SSL中
             if (SSLSocket_setSocketForSSL(&aClient->net, aClient->sslopts, addr) == 1) {
                 //连接SSL
-                rc = SSLSocket_connect(aClient->net.ssl);
+                rc = SSLSocket_connect(aClient->net.ssl, aClient->net.socket);
                 if (rc == -1) {
                     aClient->connectState = CONNECT_STATE_WAIT_FOR_SSL_COMPLETE;//SSL connect被调用，等待完成
                 }

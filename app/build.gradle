@@ -14,7 +14,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-//                cFlags "-DNO_HEAP_TRACKING"
+                cFlags "-DOPENSSL"
                 cppFlags "-frtti -fexceptions"
             }
         }

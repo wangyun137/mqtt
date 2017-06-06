@@ -165,7 +165,7 @@ int MQTTPacket_send(NetworkHandles* net, Header header, char* buffer, size_t buf
     /* 写入头部和剩余数据，这里buffer数据就一个*/
 #ifdef OPENSSL
     if (net->ssl) {
-        rc = SSLSocket_putDatas(net->ssl, net->socket, buf, buf0len, 1, &buffer, &buflen, &freed);
+        rc = SSLSocket_putDatas(net->ssl, net->socket, buf, buf0len, 1, &buffer, &bufLen, &freed);
     } else
 #endif
     {
@@ -216,7 +216,7 @@ int MQTTPacket_sends(NetworkHandles* net, Header header, int count, char** buffe
 
 #ifdef OPENSSL
     if (net->ssl) {
-        rc = SSLScoket_pudatas(net->ssl, net->socket, buf, buf0len, count, buffers, buflens, frees);
+        rc = SSLSocket_putDatas(net->ssl, net->socket, buf, buf0len, count, buffers, bufLens, frees);
     } else
 #endif
     {

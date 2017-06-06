@@ -745,7 +745,7 @@ static int MQTTClient_connectURIVersion(MQTTClient handle, MQTTClient_connectOpt
                 free(hostName);
             }
 
-            if (setSocketForSSLrc != MQTTClient_SUCCESS) {
+            if (setSocketForSSLrc != MQTT_CLIENT_SUCCESS) {
                 /* 如果没有成功给Socket设置SSL*/
                 if (m->c->session != NULL && (rc = SSL_set_session(m->c->net.ssl, m->c->session)) != 1) {
                     LOG("Failed to set SSL session with stored data, non critical in %s-%d", __FILE__, __LINE__);
@@ -758,7 +758,7 @@ static int MQTTClient_connectURIVersion(MQTTClient handle, MQTTClient_connectOpt
                     rc = SOCKET_ERROR;
                     goto exit;
                 } else if (rc == 1) {
-                    rc = MQTTClient_SUCCESS;
+                    rc = MQTT_CLIENT_SUCCESS;
                     m->c->connectState = CONNECT_STATE_WAIT_FOR_CONNACK;
                     //发送CONNECT数据包
                     if (MQTTPacket_send_connect(m->c, mqttVersion) == SOCKET_ERROR) {
@@ -910,7 +910,7 @@ static int MQTTClient_connectURI(MQTTClient handle, MQTTClient_connectOptions* o
         m->c->sslopts = NULL;
     }
 
-    if (options->struct_version != 0 && options->ssl){
+    if (options->structVersion != 0 && options->ssl){
         m->c->sslopts = malloc(sizeof(MQTTClient_SSLOptions));
         memset(m->c->sslopts, '\0', sizeof(MQTTClient_SSLOptions));
         if (options->ssl->trustStore)
@@ -1112,7 +1112,6 @@ static int MQTTClient_disconnect_internal(MQTTClient handle, int timeout) {
 void MQTTProtocol_closeSession(Clients* c, int sendWill) {
     MQTTClient_disconnect_internal((MQTTClient)c->context, 0);
 }
-
 
 
 int MQTTClient_disconnect(MQTTClient handle, int timeout) {
